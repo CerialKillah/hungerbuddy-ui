@@ -1,0 +1,99 @@
+.cartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 20px;
+  margin-top: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f0f0;
+}
+
+.optionsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optionLabel {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #9aa0a6;
+  letter-spacing: 0.5px;
+}
+
+.priceOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pricePill {
+  min-width: 60px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0 16px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pricePill:hover {
+  border-color: #1db954;
+  background: #f8fff9;
+  color: #1db954;
+}
+
+.pricePillActive {
+  background: #1db954;
+  border-color: #1db954;
+  color: white;
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.2);
+}
+
+.pricePillActive:hover {
+  background: #1aa34a;
+  color: white;
+}
+
+/* New Action Buttons Styling */
+.buttonsRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.quantityParam {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1db954;
+  border-radius: 50px;
+  height: 48px;
+  padding: 0 4px;
+  color: white;
+  flex: 1;
+}
+
+.qtyBtn {
+  color: white !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50%;
+}
+
+.qtyValue {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
