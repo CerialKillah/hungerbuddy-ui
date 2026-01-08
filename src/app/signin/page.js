@@ -1,13 +1,19 @@
 "use client";
-import React, { useState } from "react";
+
+import { useState } from "react";
 import { TextField, InputAdornment, Button, Typography } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./signin.module.css";
+import { postData } from "../../../services/fetchNodeService";
+import { useDispatch } from "react-redux";
 
 const SigninPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [user, setUser] = useState("");
+  const [message, setMessage] = useState("");
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handlePhoneChange = (event) => {
     const value = event.target.value;
@@ -19,16 +25,21 @@ const SigninPage = () => {
 
   const isButtonActive = phoneNumber.length === 10;
 
-/*   const handleSignIn = () => {
-    if (isButtonActive) {
-      router.push(`/signin/otp?phone=${phoneNumber}`);
+  const handleSignIn = async () => {
+    var mobileno = phoneNumber;
+    var response = await postData("users/student_sign_in", { mobileno });
+    console.log(response)
+    if (response.status){
+      dispatch({type:"ADD_USER",payload:[mobileno,response.data]})
+      router.push('/signin/otp')
     }
-  }; */
+    else setMessage(response.message);
+  };
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-
+        <div>Hunger Buddy</div>
         <div className={styles.header}>
           <h1 className={styles.title}>Sign In</h1>
           <p className={styles.subtitle}>Simply sign in to hungerbuddy app</p>
@@ -50,7 +61,8 @@ const SigninPage = () => {
                       sx={{
                         fontWeight: "bold",
                         color: "#000",
-                        mr: 0.5,
+                        marginRight: 0.5,
+                        fontSize: "1.1rem",
                       }}
                     >
                       +91-
@@ -66,6 +78,8 @@ const SigninPage = () => {
             }}
           />
         </div>
+
+        <div className={styles.message}>{message}</div>
 
         <div className={styles.footer}>
           <span className={styles.terms}>
@@ -83,7 +97,7 @@ const SigninPage = () => {
           <Button
             fullWidth
             variant="contained"
-            onClick={null}
+            onClick={handleSignIn}
             disabled={!isButtonActive}
             sx={{
               borderRadius: 8,
