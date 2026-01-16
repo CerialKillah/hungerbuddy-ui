@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { TextField, InputAdornment, Button, Typography } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter,useSearchParams } from "next/navigation";
 import styles from "./signin.module.css";
 import { postData } from "../../../services/fetchNodeService";
 import { useDispatch } from "react-redux";
@@ -14,6 +14,8 @@ const SigninPage = () => {
   const [message, setMessage] = useState("");
   const router = useRouter();
   const dispatch = useDispatch();
+  const params = useSearchParams();
+  const from = params.get("from");
 
   const handlePhoneChange = (event) => {
     const value = event.target.value;
@@ -31,7 +33,7 @@ const SigninPage = () => {
     console.log(response)
     if (response.status){
       dispatch({type:"ADD_USER",payload:[mobileno,response.data]})
-      router.push('/signin/otp')
+      router.push(`/signin/otp?from=${from}`)
     }
     else setMessage(response.message);
   };

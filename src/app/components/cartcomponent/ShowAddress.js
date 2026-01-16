@@ -16,7 +16,7 @@ const sampleAddress = {
 };
 
 export default function ShowAddress({
-  address = sampleAddress,
+  address,
   drawerStatus,
   setDrawerStatus,
 }) {

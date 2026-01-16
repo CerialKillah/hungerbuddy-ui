@@ -1,36 +1,54 @@
-import Image from "next/image";
-import Badge from '@mui/material/Badge';
-import { useRouter } from "next/navigation";
+"use client";
 
-export default function User({totalItems}) {
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { Avatar, Badge } from "@mui/material";
+
+export default function User({ totalItems }) {
   var navigate = useRouter();
+  const [userData, setUserData] = useState("Not Login");
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("USER");
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user != null) {
+          setUserData(Object.values(user)[0]);
+        }
+      } catch (e) {
+        localStorage.removeItem("USER");
+      }
+    }
+  }, []);
 
   return (
     <div
-    onClick={() => navigate.push("/cart")}
       style={{
         display: "flex",
         alignItems: "center",
         gap: 10,
         width: "auto",
-        
       }}
     >
       <Badge badgeContent={totalItems} color="error">
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          background: "#000",
-          cursor: "pointer",
-        }}
-      >
-        <Image src="/images/cart.png" width={25} height={25} alt="" />
-      </div>
+        <div
+          onClick={() => navigate.push("/cart")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            background: "#000",
+            cursor: "pointer",
+          }}
+        >
+          <Image src="/images/cart.png" width={25} height={25} alt="" />
+        </div>
       </Badge>
 
       <div
@@ -50,6 +68,7 @@ export default function User({totalItems}) {
             height: 40,
             borderRadius: 20,
             background: "#000",
+            cursor: "pointer",
           }}
         >
           <Image src="/images/wallet.jpg" width={25} height={25} alt="" />
@@ -75,19 +94,29 @@ export default function User({totalItems}) {
         </div>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          background: "#000",
-        }}
-      >
-        <Image src="/images/user.png" width={25} height={25} alt="" />
-      </div>
+      {userData == "Not Login" ? (
+        <div
+          onClick={() => navigate.push("/signin?from=HP")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            background: "#000",
+            cursor: "pointer",
+          }}
+        >
+          <Image src="/images/user.png" width={25} height={25} alt="" />
+        </div>
+      ) : (
+        <div>
+          <Avatar sx={{ background: "orange", color: "#fff" }}>
+            {userData?.studentname[0]}
+          </Avatar>
+        </div>
+      )}
     </div>
   );
 }

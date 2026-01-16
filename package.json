@@ -17,8 +17,10 @@
     "next": "16.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-razorpay": "^3.0.1",
     "react-redux": "^9.2.0",
     "react-slick": "^0.31.0",
+    "reactjs-otp-input": "^2.0.10",
     "redux": "^5.0.1",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.26.4"

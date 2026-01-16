@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Grid, Button } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -13,6 +13,7 @@ import styles from "./order-review.module.css";
 import { useSelector } from "react-redux";
 import SelectAddressDrawer from "../components/cartcomponent/SelectAddressDrawer";
 import AddAddressDrawer from "../components/cartcomponent/AddAddressDrawer";
+import { useRazorpay, RazorpayOrderOptions } from "react-razorpay";
 
 export default function OrderReviewPage() {
   const theme = useTheme();
@@ -27,7 +28,39 @@ export default function OrderReviewPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [drawerStatus, setDrawerStatus] = useState(false);
   const [addAddressDrawerStatus, setAddAddressDrawerStatus] = useState(false);
-  var user = useSelector((state) => state.user);
+  const [userData, setUserData] = useState(null);
+  const { error, isLoading, Razorpay } = useRazorpay();
+  const mrpTotal = products.reduce(
+    (sum, item) => sum + Number(item.fullprice) * item.qty,
+    0
+  );
+  const discount = products.reduce(
+    (sum, item) =>
+      sum +
+      (Number(item.offerprice) > 0
+        ? Number(item.fullprice) - Number(item.offerprice)
+        : 0) *
+        item.qty,
+    0
+  );
+  const deliveryFee = 0;
+  const total = mrpTotal - discount + deliveryFee;
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("USER");
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user != null) {
+          setUserData(Object.values(user)[0]);
+        }
+      } catch (e) {
+        localStorage.removeItem("USER");
+      }
+    }
+  }, []);
+
+  const btnMessage = userData == null ? "Sign In" : "Make Payment";
 
   const handleOpenAddAddress = () => {
     setDrawerStatus(false);
@@ -40,7 +73,34 @@ export default function OrderReviewPage() {
   };
 
   const handleMakePayment = () => {
+    if (userData == null) {
+      router.push("/signin?from=MP");
+    } else {
+      const razorpayInstance = new Razorpay(options);
+      razorpayInstance.open();
+    }
     setCurrentStep(2); // Move to Payment step
+  };
+
+  const options = {
+    key: "rzp_test_S4YgFZOAftxXG8",
+    amount: total * 100, // Amount in paise
+    currency: "INR",
+    name: "Hunger Buddy",
+    description: "Test Transaction",
+    order_id: "", // Generate order_id on server
+    handler: (response) => {
+      console.log(response);
+      alert("Payment Successful!");
+    },
+    prefill: {
+      name: userData?.studentname,
+      email: userData?.emailid,
+      contact: userData?.mobileno,
+    },
+    theme: {
+      color: "#F37254",
+    },
   };
 
   return (
@@ -80,10 +140,15 @@ export default function OrderReviewPage() {
                   gap: "16px",
                 }}
               >
-                <ShowAddress
-                  drawerStatus={drawerStatus}
-                  setDrawerStatus={setDrawerStatus}
-                />
+                {userData != null ? (
+                  <ShowAddress
+                    drawerStatus={drawerStatus}
+                    setDrawerStatus={setDrawerStatus}
+                    address={userData}
+                  />
+                ) : (
+                  <></>
+                )}
                 <ShowCart items={products} />
               </div>
             </Grid>
@@ -102,7 +167,7 @@ export default function OrderReviewPage() {
                     className={styles.placeOrderBtn}
                     onClick={handleMakePayment}
                   >
-                    Make Payment
+                    {btnMessage}
                   </Button>
                 ) : (
                   <div>Payment Step Placeholder</div>

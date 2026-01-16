@@ -1,6 +1,7 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 const serverURL = "http://localhost:5000";
+
 function getDate() {
   var cd = new Date();
   return `${cd.getFullYear()}/${cd.getMonth() + 1}/${cd.getDate()}`;
@@ -9,6 +10,11 @@ function getDate() {
 function getTime() {
   var cd = new Date();
   return `${cd.getHours()}:${cd.getMinutes()}:${cd.getSeconds()}`;
+}
+
+function generateOTP(){
+ var otp=parseInt(Math.random()*899999)+100000
+ return otp
 }
 
 async function postData(url, body) {
@@ -61,4 +67,4 @@ async function getData(url) {
     return [];
   }
 }
-export { postData, serverURL, getDate, getTime, getData };
+export { postData, serverURL, getDate, getTime, getData, generateOTP };

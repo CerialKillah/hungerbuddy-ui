@@ -38,6 +38,7 @@ function RootReducer(state=initailState,action)
       return {cart:state.cart,user:state.user}
   case "ADD_USER":
       state.user[action.payload[0]]=action.payload[1]
+      localStorage.setItem("USER",JSON.stringify(state.user))
       console.log("USER:",state.user)
       return {cart:state.cart,user:state.user}
   case "DELETE_CART":
@@ -45,7 +46,7 @@ function RootReducer(state=initailState,action)
       console.log("CART:",state.cart)
       return {cart:state.cart,user:state.user}    
   default:
-    return {cart:state.cart,user:state.user}
+    return state
   }
 }
 

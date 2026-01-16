@@ -3,17 +3,24 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import { Button } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import styles from "./otp.module.css";
+import { OtpInput } from "reactjs-otp-input";
+import { useSelector } from "react-redux";
+import { generateOTP } from "../../../../services/fetchNodeService";
 
 const OtpContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone");
-  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [otp, setOtp] = useState("");
+  const [gOtp, setGOtp] = useState("");
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
-  const inputsRef = useRef([]);
+  const user = useSelector((state) => state.user);
+  const mobileno = Object.keys(user)[0];
+  const params = useSearchParams();
+  const from = params.get("from");
 
   useEffect(() => {
     let interval = null;
@@ -27,6 +34,24 @@ const OtpContent = () => {
     return () => clearInterval(interval);
   }, [timer]);
 
+  useEffect(function () {
+    var otp = generateOTP();
+    setGOtp(otp);
+    alert(otp);
+  }, []);
+
+  function checkOtp() {
+    if (gOtp) {
+      if (from == "MP") {
+        router.push("/order-review");
+      } else if (from == "HP") {
+        router.push("/homepage");
+      }
+    } else {
+      alert("Not Correct");
+    }
+  }
+
   const handleResend = () => {
     setTimer(30);
     setCanResend(false);
@@ -34,29 +59,7 @@ const OtpContent = () => {
     console.log("Resending OTP...");
   };
 
-  const handleChange = (element, index) => {
-    if (isNaN(element.value)) return false;
-
-    const newOtp = [...otp];
-    newOtp[index] = element.value;
-    setOtp(newOtp);
-
-    // Focus next input
-    if (element.value && index < 5) {
-      inputsRef.current[index + 1].focus();
-    }
-  };
-
-  const handleKeyDown = (e, index) => {
-    // Handle backspace
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputsRef.current[index - 1].focus();
-    }
-  };
-
-  // Auto paste handling could be added here
-
-  const isOtpComplete = otp.every((digit) => digit !== "");
+  const isOtpComplete = otp.length === 6;
 
   return (
     <div className={styles.container}>
@@ -72,30 +75,43 @@ const OtpContent = () => {
         <div className={styles.header}>
           <h1 className={styles.title}>Verify OTP</h1>
           <p className={styles.subtitle}>
-            Enter the OTP sent to <strong>+91-{phone}</strong>
+            Enter the OTP sent to <strong>+91-{mobileno}</strong>
           </p>
           <Link href="/signin" style={{ textDecoration: "none" }}>
             <span className={styles.updateLink}>Update number</span>
           </Link>
         </div>
 
-        <div className={styles.otpContainer}>
-          {otp.map((data, index) => {
-            return (
-              <input
-                className={styles.otpInput}
-                type="text"
-                name="otp"
-                maxLength="1"
-                key={index}
-                value={data}
-                ref={(el) => (inputsRef.current[index] = el)}
-                onChange={(e) => handleChange(e.target, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                onFocus={(e) => e.target.select()}
-              />
-            );
-          })}
+        <div className={styles.otpWrapper}>
+          <OtpInput
+            value={otp}
+            onChange={setOtp}
+            numInputs={6}
+            isInputNum={true}
+            shouldAutoFocus={true}
+            containerStyle={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "12px",
+            }}
+            inputStyle={{
+              width: "48px",
+              height: "56px",
+              fontSize: "1.5rem",
+              fontWeight: "600",
+              border: "2px solid #e0e0e0",
+              borderRadius: "12px",
+              backgroundColor: "#fafafa",
+              color: "#333",
+              transition: "all 0.2s ease",
+              outline: "none",
+            }}
+            focusStyle={{
+              border: "2px solid #0071bc",
+              backgroundColor: "#fff",
+              boxShadow: "0 0 0 3px rgba(0, 113, 188, 0.15)",
+            }}
+          />
         </div>
 
         <div className={styles.resendContainer}>
@@ -121,17 +137,18 @@ const OtpContent = () => {
             fullWidth
             variant="contained"
             disabled={!isOtpComplete}
+            onClick={checkOtp}
             sx={{
               borderRadius: 8,
               py: 1.5,
               fontSize: "1rem",
               fontWeight: "bold",
               textTransform: "none",
-              backgroundColor: isOtpComplete ? "#add8e6" : "#e0e0e0",
+              backgroundColor: isOtpComplete ? "#0078AD" : "#e0e0e0",
               color: "#fff",
               boxShadow: "none",
               "&:hover": {
-                backgroundColor: isOtpComplete ? "#87ceeb" : "#e0e0e0",
+                backgroundColor: isOtpComplete ? "#0C5273" : "#e0e0e0",
                 boxShadow: "none",
               },
               "&.Mui-disabled": {

@@ -59,22 +59,12 @@
   font-size: 0.875rem;
 }
 
-.otpContainer {
+.otpWrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 12px;
   margin-top: 32px;
   margin-bottom: 32px;
-}
-
-.otpInput {
-  width: 40px;
-  height: 40px;
-  font-size: 24px;
-  text-align: center;
-  border: none;
-  border-bottom: 2px solid #000;
-  outline: none;
-  background-color: transparent;
 }
 
 .resendContainer {
