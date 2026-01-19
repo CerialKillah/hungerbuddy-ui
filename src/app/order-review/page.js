@@ -10,10 +10,11 @@ import PaymentDetails from "../components/cartcomponent/PaymentDetails";
 import CouponComponent from "../components/cartcomponent/CouponComponent";
 import CounterComponent from "../components/cartcomponent/CounterComponent";
 import styles from "./order-review.module.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SelectAddressDrawer from "../components/cartcomponent/SelectAddressDrawer";
 import AddAddressDrawer from "../components/cartcomponent/AddAddressDrawer";
 import { useRazorpay, RazorpayOrderOptions } from "react-razorpay";
+import { postData } from "../../../services/fetchNodeService";
 
 export default function OrderReviewPage() {
   const theme = useTheme();
@@ -22,6 +23,7 @@ export default function OrderReviewPage() {
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
   var cart = useSelector((state) => state.cart);
   var products = Object.values(cart);
+  const dispatch = useDispatch();
 
   // Step management: 0 = My Cart, 1 = Order Review, 2 = Payment
   // Start at 1 for Order Review
@@ -40,7 +42,7 @@ export default function OrderReviewPage() {
       (Number(item.offerprice) > 0
         ? Number(item.fullprice) - Number(item.offerprice)
         : 0) *
-        item.qty,
+      item.qty,
     0
   );
   const deliveryFee = 0;
@@ -89,9 +91,13 @@ export default function OrderReviewPage() {
     name: "Hunger Buddy",
     description: "Test Transaction",
     order_id: "", // Generate order_id on server
-    handler: (response) => {
-      console.log(response);
-      alert("Payment Successful!");
+    handler: async (response) => {
+      //console.log(response);
+      await postData("order/submit_order", { paymentid: response.razorpay_payment_id, orderdate: new Date(), delivery_status: "Not Delivered", payment_type: "None" }).then(async (res) => {
+        await postData("order/submit_order_detail", { orderid: res.orderid, enrollmentno: userData.enrollmentno, emailid: userData.emailid, mobileno: userData.mobileno, data: products })
+      })
+      dispatch({ type: "EMPTY_CART" })
+      router.push("/homepage")
     },
     prefill: {
       name: userData?.studentname,

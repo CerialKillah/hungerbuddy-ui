@@ -45,6 +45,10 @@ function RootReducer(state=initailState,action)
       delete state.cart[action.payload[0]]
       console.log("CART:",state.cart)
       return {cart:state.cart,user:state.user}    
+  case "EMPTY_CART":
+        state.cart={}
+        console.log("CART:",state.cart)
+        return {cart:state.cart,user:state.user}
   default:
     return state
   }
