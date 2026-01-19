@@ -44,7 +44,7 @@ const OtpContent = () => {
     if (gOtp) {
       if (from == "MP") {
         router.push("/order-review");
-      } else if (from == "HP") {
+      } else {
         router.push("/homepage");
       }
     } else {

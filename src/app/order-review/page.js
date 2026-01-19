@@ -50,6 +50,7 @@ export default function OrderReviewPage() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("USER");
+    console.log(storedUser);
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser);
